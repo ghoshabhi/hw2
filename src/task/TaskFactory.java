@@ -1,9 +1,13 @@
+/*
+ * @author Abhishek Ghosh
+ */
 package task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/* TaskFactory class to generate a bunch of tasks to work with */
 public class TaskFactory {
     public static List<Task> getTaskList() {
         LocalDateTime dt1 = LocalDateTime.of(2018,3,18,22,22, 59);
@@ -18,7 +22,7 @@ public class TaskFactory {
             Task task = new Task(
                 "Project_" + i,
                 "Task_"+i,
-                i,
+                i, // taskId
                 Task.TASK_TYPES.getRandomTaskType(),
                 "some description_"+i,
                 "userId_"+i,
@@ -70,7 +74,7 @@ public class TaskFactory {
         taskList.add(new Task(
                         "Project_" + 2000,
                         "Task_"+14,
-                        13,
+                        14,
                         Task.TASK_TYPES.FRONTEND,
                         "some description_"+13,
                         null,
@@ -80,7 +84,7 @@ public class TaskFactory {
         taskList.add(new Task(
                         "Project_" + 2000,
                         "Task_"+15,
-                        13,
+                        15,
                         Task.TASK_TYPES.QA,
                         "some description_"+13,
                         null,
