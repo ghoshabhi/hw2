@@ -4,6 +4,7 @@
 package taskpredicates;
 
 import task.Task;
+import task.TaskType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class TaskPredicates {
      *                 valid options.
      * @return Filtered list
      */
-    public static Predicate<Task> findByTaskType (Task.TASK_TYPES taskType) {
+    public static Predicate<Task> findByTaskType (TaskType taskType) {
         return task -> task.getTaskType() == taskType;
     }
 

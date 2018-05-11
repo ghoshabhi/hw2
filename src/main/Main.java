@@ -14,32 +14,37 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import task.Task;
 import task.TaskFactory;
-import taskpredicates.TaskPredicates;
+import task.TaskType;
 import ui.TasksTableView;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import static taskpredicates.TaskPredicates.query;
-import static taskpredicates.TaskPredicates.findByProjectName;
-import static taskpredicates.TaskPredicates.findUnassignedTasks;
-import static taskpredicates.TaskPredicates.findByTaskType;
+import static taskpredicates.TaskPredicates.*;
 
 public class Main extends Application {
     Stage window;
     Scene scene;
 
     TableView<Task> taskTableView;
-    ComboBox<String> comboBoxFilter;
+    ComboBox<String> comboBoxFilter, comboBoxTaskType;
     TextField tfSearchQuery, tfFrom, tfTo;
+    DatePicker dtFrom, dtTo;
     Button btnSearch, btnClear;
-    HBox searchBoxView;
+
+    VBox searchBoxView;
+    HBox singleFilter;
+    HBox multiFilter;
 
     ObservableList<Task> tasks;
     ObservableList<Task> filteredTasks;
 
-    private final String[] SINGLE_TEXT_FIELD_FILTERS = {"Project Name", "Task Name", "User ID"};
-    private boolean SINGLE_FILTER_ACTIVE = false;
+    private final String[] SINGLE_TEXT_FIELD_FILTERS = {"Project Name", "User ID"};
+    private boolean SINGLE_FILTER_ACTIVE, RANGE_FILTER_ACTIVE, DROPDOWN_FILTER_ACTIVE = false;
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static void main(String[] args) {
         launch(args);
@@ -52,15 +57,24 @@ public class Main extends Application {
 
         comboBoxFilter = new ComboBox<>();
         comboBoxFilter.setPromptText("Choose a Filter...");
-        comboBoxFilter.getItems().addAll("Task Name", "Project Name", "Completion Date", "Deadline");
+        comboBoxFilter.getItems().addAll("Project Name", "Task Type", "User ID", "Completion Date", "Deadline");
         comboBoxFilter
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener((v, oldValue, newValue) -> handleChoiceBoxFilterChange(newValue));
 
-        searchBoxView = new HBox(10);
+        searchBoxView = new VBox(10);
         searchBoxView.setPadding(new Insets(10, 10, 10, 10));
-        searchBoxView.getChildren().addAll(comboBoxFilter);
+        Separator separator = new Separator();
+
+        singleFilter = new HBox(10);
+        multiFilter = new HBox(10);
+
+        singleFilter.getChildren().add(comboBoxFilter);
+        Button btn = new Button("Demo");
+        multiFilter.getChildren().add(btn);
+
+        searchBoxView.getChildren().addAll(singleFilter, separator, multiFilter);
 
 
         taskTableView = TasksTableView.getTableView();
@@ -70,26 +84,29 @@ public class Main extends Application {
         layout.setPadding(new Insets(10, 10, 10, 10));
         layout.getChildren().addAll(taskTableView, searchBoxView);
 
-        scene = new Scene(layout, 690, 400);
+        scene = new Scene(layout, 800, 450);
         window.setScene(scene);
         window.show();
     }
 
-    public ObservableList<Task> getTasks() {
-        tasks = FXCollections.observableArrayList(TaskFactory.getTaskList());
+    private ObservableList<Task> getTasks() {
+        List<Task> list = TaskFactory.getTaskList();
+        tasks = FXCollections.observableArrayList(list);
         return tasks;
     }
 
-    public void handleChoiceBoxFilterChange(String filter) {
+    private void handleChoiceBoxFilterChange(String filter) {
         if (Arrays.asList(SINGLE_TEXT_FIELD_FILTERS).contains(filter)) {
             if (!SINGLE_FILTER_ACTIVE) {
                 SINGLE_FILTER_ACTIVE = true;
+                RANGE_FILTER_ACTIVE = false;
+                DROPDOWN_FILTER_ACTIVE = false;
                 // Cleanup
-                searchBoxView.getChildren().removeAll(tfFrom, tfTo, btnSearch, btnClear);
+                singleFilter.getChildren().removeAll(dtFrom, dtTo, comboBoxTaskType, btnSearch, btnClear);
 
                 // set new fields
                 tfSearchQuery = new TextField();
-                tfSearchQuery.setPromptText(filter);
+                tfSearchQuery.setPromptText("Enter " + filter);
                 tfSearchQuery.setMinWidth(100);
 
                 // Search and Clear buttons
@@ -98,132 +115,125 @@ public class Main extends Application {
                 btnClear = new Button("Clear");
                 btnClear.setOnAction(e -> handleClear());
 
-                searchBoxView.getChildren().addAll(tfSearchQuery, btnSearch, btnClear);
+                singleFilter.getChildren().addAll(tfSearchQuery, btnSearch, btnClear);
             } else {
-                tfSearchQuery.setPromptText(filter);
+                tfSearchQuery.setPromptText("Enter " + filter);
+            }
+        } else if(filter == "Task Type") {
+            if(!DROPDOWN_FILTER_ACTIVE) {
+                DROPDOWN_FILTER_ACTIVE = true;
+                RANGE_FILTER_ACTIVE = false;
+                SINGLE_FILTER_ACTIVE = false;
+
+                // Cleanup
+                singleFilter.getChildren().removeAll(dtFrom, dtTo, tfSearchQuery, btnSearch, btnClear);
+
+                comboBoxTaskType = new ComboBox<>();
+                comboBoxTaskType.setPromptText("Choose a Filter...");
+                comboBoxTaskType.getItems().addAll("FrontEnd", "BackEnd", "QA");
+
+                // Search and Clear buttons
+                btnSearch = new Button("Search");
+                btnSearch.setOnAction(e -> handleSearch());
+                btnClear = new Button("Clear");
+                btnClear.setOnAction(e -> handleClear());
+
+                singleFilter.getChildren().addAll(comboBoxTaskType, btnSearch, btnClear);
             }
         } else {
-            SINGLE_FILTER_ACTIVE = false;
-            // Cleanup
-            searchBoxView.getChildren().removeAll(tfSearchQuery, btnSearch, btnClear);
-            tfFrom = new TextField();
-            tfFrom.setPromptText("From");
-            tfFrom.setMinWidth(100);
+            if(!RANGE_FILTER_ACTIVE ) {
+                RANGE_FILTER_ACTIVE = true;
+                SINGLE_FILTER_ACTIVE = false;
+                DROPDOWN_FILTER_ACTIVE = false;
+                // Cleanup
+                singleFilter.getChildren().removeAll(tfSearchQuery, comboBoxTaskType, btnSearch, btnClear);
 
-            // set new fields
-            tfTo = new TextField();
-            tfTo.setPromptText("To");
-            tfTo.setMinWidth(100);
+                dtFrom = new DatePicker();
+                dtFrom.setPromptText("From Date");
+                dtTo = new DatePicker();
+                dtTo.setPromptText("To Date");
 
-            // Search and Clear buttons
-            btnSearch = new Button("Search");
-            btnSearch.setOnAction(e -> handleSearch());
-            btnClear = new Button("Clear");
-            btnClear.setOnAction(e -> handleClear());
+                // Search and Clear buttons
+                btnSearch = new Button("Search");
+                btnSearch.setOnAction(e -> handleSearch());
+                btnClear = new Button("Clear");
+                btnClear.setOnAction(e -> handleClear());
 
-            searchBoxView.getChildren().addAll(tfTo, tfFrom, btnSearch, btnClear);
+                singleFilter.getChildren().addAll(dtFrom, dtTo, btnSearch, btnClear);
+            }
         }
     }
 
-    public void handleSearch() {
-        String taskName = tfSearchQuery.getText();
-        List<Task> filtered = TaskPredicates.getFilteredTaskList((List) tasks, findByProjectName(taskName));
-        filteredTasks = FXCollections.observableArrayList(filtered);
-        taskTableView.getItems().removeAll();
-        taskTableView.setItems(filteredTasks);
+    private void handleSearch() {
+        if(SINGLE_FILTER_ACTIVE) {
+            String query = tfSearchQuery.getText();
+            String filterName = comboBoxFilter.getValue();
+            List<Task> filtered = null;
+            //"Project Name", "Task Type", "User ID"
+            switch(filterName) {
+                case "Project Name": {
+                    filtered = getFilteredTaskList((List)tasks, findByProjectName(query));
+                    break;
+                }
+                case "User ID": {
+                    filtered = getFilteredTaskList((List)tasks, findByUserId(query));
+                    break;
+                }
+                default: {
+                    filtered = (List)tasks;
+                    break;
+                }
+            }
+            filteredTasks = FXCollections.observableArrayList(filtered);
+            taskTableView.getItems().removeAll();
+            taskTableView.setItems(filteredTasks);
+        } else if (RANGE_FILTER_ACTIVE) {
+            LocalDateTime ldtFrom = formatDate(dtFrom.getValue().toString());
+            LocalDateTime ldtTo = formatDate(dtTo.getValue().toString());
+            String filterName = comboBoxFilter.getValue();
+
+            List<Task> filtered = null;
+
+            if(filterName == "Deadline") {
+                filtered = getFilteredTaskList((List)tasks, findByDeadline(ldtFrom, ldtTo));
+            } else {
+                filtered = getFilteredTaskList((List)tasks, findByCompletionDate(ldtFrom, ldtTo));
+            }
+
+            filteredTasks = FXCollections.observableArrayList(filtered);
+            taskTableView.getItems().removeAll();
+            taskTableView.setItems(filteredTasks);
+        } else if (DROPDOWN_FILTER_ACTIVE){
+            String strTaskType = comboBoxTaskType.getValue();
+            TaskType taskType = TaskType.valueOf(strTaskType.toUpperCase());
+
+            List<Task> filtered = getFilteredTaskList((List)tasks, findByTaskType(taskType));
+
+            filteredTasks = FXCollections.observableArrayList(filtered);
+            taskTableView.getItems().removeAll();
+            taskTableView.setItems(filteredTasks);
+        }
     }
 
-    public void handleClear() {
+    private LocalDateTime formatDate(String dt) {
+        LocalDate localDate = LocalDate.parse(dt, DATE_FORMATTER);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalDateTime.now().toLocalTime());
+        return localDateTime;
+    }
+
+    private void handleClear() {
         filteredTasks = null;
+        if(DROPDOWN_FILTER_ACTIVE) {
+            comboBoxTaskType.getSelectionModel().clearSelection();
+        } else if(RANGE_FILTER_ACTIVE) {
+            dtFrom.getEditor().clear();
+            dtTo.getEditor().clear();
+        } else {
+            tfSearchQuery.clear();
+        }
+
         taskTableView.getItems().removeAll();
-        taskTableView.setItems(getTasks());
-        tfSearchQuery.clear();
+        taskTableView.setItems(tasks);
     }
-
-
-    //        /* Generate a task list to work with. Please check out the "TaskFactory" class in the "task" package to
-//        * generate any additional task objects to test out the predicate logic.
-//        */
-//        List<Task> taskList = TaskFactory.getTaskList();
-//        // Helper date time objects to test the predicates
-//        LocalDateTime dt1 = LocalDateTime.of(2018,3,18,22,22, 59);
-//        LocalDateTime dt2 = LocalDateTime.of(2018,12,18,8,22, 59);
-//        LocalDateTime dt3 = LocalDateTime.of(2018,4,24,00,00, 00);
-//
-//        /**
-//         * Create a list of Predicate filters to apply on a task list to simulate a "query"
-//         */
-//        List<Predicate<Task>> filters = new ArrayList<>();
-//
-//        filters.add(findByProjectName("Project_10"));
-//        filters.add(findUnassignedTasks());
-//        filters.add(findByTaskType(Task.TASK_TYPES.BACKEND));
-//        /*
-//         * The predicates above simulate the following query =>
-//         * "select * from Project where project.name == "ProjectName_10"
-//         * AND project.user == null
-//         * AND project.type == BACKEND;"
-//         */
-//
-//        System.out.println("Filtered Items: \n");
-//
-//        List<Task> filteredTaskList = query(taskList, filters);
-//        filteredTaskList.forEach(System.out::println);
-//
-//        System.out.println("--------------------------------");
-//
-//        System.out.println("Using .map() to only get a task's description from the filtered list above: \n");
-//
-//        List<String> taskDescriptions = filteredTaskList
-//                .stream()
-//                .map(Task::getTaskDescription)
-//                .collect(Collectors.toList());
-//        taskDescriptions.forEach(System.out::println);
-//
-//        System.out.println("--------------------------------");
-//
-//        /**
-//         * Example of building custom predicates and putting them in a list to use with the "TaskPredicates.query" function.
-//         */
-//        List<Predicate<Task>> customPredicates = new ArrayList<>();
-//
-//        Predicate<Task> notNull = Objects::nonNull;
-//        Predicate<Task> getByDate24thApril= task -> task.getTaskDeadline().equals(dt3);
-//
-//        customPredicates.addAll(Arrays.asList(notNull, getByDate24thApril));
-//
-//        List<Task> filteredTaskList2 = query(taskList, customPredicates);
-//        System.out.println("Filtered Task List with Custom Predicates: \n");
-//        filteredTaskList2.forEach(System.out::println);
-//        System.out.println("--------------------------------");
-//
-//
-//        /**
-//         * The following is the example usage of "TaskPredicates.getFilteredTaskList" function which
-//         * takes a list of tasks and a single predicate function to apply to the list.
-//         */
-//        System.out.println("\n");
-//        System.out.println("Unassigned Tasks: ");
-//        TaskPredicates
-//                .getFilteredTaskList(taskList, TaskPredicates.findUnassignedTasks())
-//                .forEach(System.out::println);
-//
-//        System.out.println("\n");
-//        System.out.println("Find By Project Name: ");
-//        TaskPredicates
-//                .getFilteredTaskList(taskList, TaskPredicates.findByProjectName("Project_1"))
-//                .forEach(System.out::println);
-//
-//        System.out.println("\n");
-//        System.out.println("Filter By Task Type (BACKEND): ");
-//        TaskPredicates
-//                .getFilteredTaskList(taskList, TaskPredicates.findByTaskType(Task.TASK_TYPES.BACKEND))
-//                .forEach(System.out::println);
-//
-//        System.out.println("\n");
-//        System.out.println("Find By Deadline range: ");
-//        TaskPredicates
-//                .getFilteredTaskList(taskList, TaskPredicates.findByDeadline(dt1, dt2))
-//                .forEach(System.out::println);
 }
 

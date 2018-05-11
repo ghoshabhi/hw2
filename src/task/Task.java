@@ -4,30 +4,18 @@
 package task;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 public class Task {
-    public enum TASK_TYPES {
-        FRONTEND,
-        BACKEND,
-        QA;
-
-        public static TASK_TYPES getRandomTaskType() {
-            Random random = new Random();
-            return values()[random.nextInt(values().length)];
-        }
-    };
-
     private String projectName;
     private String taskName;
     private Integer taskId;
-    private TASK_TYPES taskType;
+    private TaskType taskType;
     private  String taskDescription;
     private  String userId;
     private LocalDateTime taskDeadline;
     private LocalDateTime taskCompletedOn;
 
-    public Task(String projectName, String taskName, Integer taskId, TASK_TYPES taskType, String taskDescription, String userId, LocalDateTime taskDeadline) {
+    public Task(String projectName, String taskName, Integer taskId, TaskType taskType, String taskDescription, String userId, LocalDateTime taskDeadline) {
         this.projectName = projectName;
         this.taskName = taskName;
         this.taskId = taskId;
@@ -75,11 +63,11 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public TASK_TYPES getTaskType() {
+    public TaskType getTaskType() {
         return taskType;
     }
 
-    public void setTaskType(TASK_TYPES taskType) {
+    public void setTaskType(TaskType taskType) {
         this.taskType = taskType;
     }
 
