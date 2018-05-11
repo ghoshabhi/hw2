@@ -1,0 +1,64 @@
+package ui;
+
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import task.Task;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class TasksTableView {
+    public static TableView getTableView() {
+        TableColumn<Task, Integer> colTaskId = new TableColumn<>("TaskId");
+        colTaskId.setMinWidth(60);
+        colTaskId.setStyle("-fx-alignment: CENTER");
+        colTaskId.setCellValueFactory(new PropertyValueFactory<>("taskId"));
+
+        TableColumn<Task, String> colTaskName = new TableColumn<>("Task Name");
+        colTaskName.setMinWidth(150);
+        colTaskName.setStyle("-fx-alignment: CENTER");
+        colTaskName.setCellValueFactory(new PropertyValueFactory<>("taskName"));
+
+        TableColumn<Task, String> colProjectName = new TableColumn<>("Project Name");
+        colProjectName.setMinWidth(150);
+        colProjectName.setStyle("-fx-alignment: CENTER");
+        colProjectName.setCellValueFactory(new PropertyValueFactory<>("projectName"));
+
+        TableColumn<Task, String> colTaskType = new TableColumn<>("Task Type");
+        colTaskType.setMinWidth(150);
+        colTaskType.setStyle("-fx-alignment: CENTER");
+        colTaskType.setCellValueFactory(new PropertyValueFactory<>("taskType"));
+
+        DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("MM/dd/YYYY");
+        TableColumn<Task, LocalDateTime> colTaskDeadline = new TableColumn<>("Deadline");
+        colTaskDeadline.setMinWidth(150);
+        colTaskDeadline.setStyle("-fx-alignment: CENTER");
+        colTaskDeadline.setCellValueFactory(new PropertyValueFactory<>("taskDeadline"));
+        colTaskDeadline.setCellFactory(column -> {
+            return new TableCell<Task, LocalDateTime>() {
+                @Override
+                protected void updateItem(LocalDateTime item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        // Format date.
+                        setText(myDateFormatter.format(item));
+                    }
+                }
+            };
+        });
+
+        TableView taskTableView = new TableView<>();
+        taskTableView.setPlaceholder(new Label("No records found for the matched query!"));
+        taskTableView.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+        taskTableView.getColumns().addAll(colTaskId, colTaskName, colProjectName, colTaskType, colTaskDeadline);
+
+        return taskTableView;
+        // taskTableView.setItems(getTasks());
+    };
+}

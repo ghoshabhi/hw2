@@ -4,29 +4,21 @@
 package main;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import task.Task;
 import task.TaskFactory;
 import taskpredicates.TaskPredicates;
+import ui.TasksTableView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static taskpredicates.TaskPredicates.query;
 import static taskpredicates.TaskPredicates.findByProjectName;
@@ -36,7 +28,18 @@ import static taskpredicates.TaskPredicates.findByTaskType;
 public class Main extends Application {
     Stage window;
     Scene scene;
+
     TableView<Task> taskTableView;
+    ComboBox<String> comboBoxFilter;
+    TextField tfSearchQuery, tfFrom, tfTo;
+    Button btnSearch, btnClear;
+    HBox searchBoxView;
+
+    ObservableList<Task> tasks;
+    ObservableList<Task> filteredTasks;
+
+    private final String[] SINGLE_TEXT_FIELD_FILTERS = {"Project Name", "Task Name", "User ID"};
+    private boolean SINGLE_FILTER_ACTIVE = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -47,66 +50,96 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Project Management Application");
 
-        TableColumn<Task, Integer> colTaskId = new TableColumn<>("TaskId");
-        colTaskId.setMinWidth(50);
-        colTaskId.setStyle("-fx-alignment: CENTER");
-        colTaskId.setCellValueFactory(new PropertyValueFactory<>("taskId"));
+        comboBoxFilter = new ComboBox<>();
+        comboBoxFilter.setPromptText("Choose a Filter...");
+        comboBoxFilter.getItems().addAll("Task Name", "Project Name", "Completion Date", "Deadline");
+        comboBoxFilter
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((v, oldValue, newValue) -> handleChoiceBoxFilterChange(newValue));
 
-        TableColumn<Task, String> colTaskName = new TableColumn<>("Task Name");
-        colTaskName.setMinWidth(250);
-        colTaskName.setStyle("-fx-alignment: CENTER");
-        colTaskName.setCellValueFactory(new PropertyValueFactory<>("taskName"));
-
-        TableColumn<Task, String> colProjectName = new TableColumn<>("Project Name");
-        colProjectName.setMinWidth(250);
-        colProjectName.setStyle("-fx-alignment: CENTER");
-        colProjectName.setCellValueFactory(new PropertyValueFactory<>("projectName"));
-
-        TableColumn<Task, String> colTaskType = new TableColumn<>("Task Type");
-        colTaskType.setMinWidth(250);
-        colTaskType.setStyle("-fx-alignment: CENTER");
-        colTaskType.setCellValueFactory(new PropertyValueFactory<>("taskType"));
-
-        DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("MM/dd/YYYY");
-        TableColumn<Task, LocalDateTime> colTaskDeadline = new TableColumn<>("Deadline");
-        colTaskDeadline.setMinWidth(250);
-        colTaskDeadline.setStyle("-fx-alignment: CENTER");
-        colTaskDeadline.setCellValueFactory(new PropertyValueFactory<>("taskDeadline"));
-        colTaskDeadline.setCellFactory(column -> {
-            return new TableCell<Task, LocalDateTime>() {
-                @Override
-                protected void updateItem(LocalDateTime item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (item == null || empty) {
-                        setText(null);
-                    } else {
-                        // Format date.
-                        setText(myDateFormatter.format(item));
-                    }
-                }
-            };
-        });
+        searchBoxView = new HBox(10);
+        searchBoxView.setPadding(new Insets(10, 10, 10, 10));
+        searchBoxView.getChildren().addAll(comboBoxFilter);
 
 
-        taskTableView = new TableView<>();
+        taskTableView = TasksTableView.getTableView();
         taskTableView.setItems(getTasks());
-        taskTableView.getColumns().addAll(colTaskId, colTaskName, colProjectName, colTaskType, colTaskDeadline);
 
         VBox layout = new VBox(10);
-        layout.setPadding(new Insets(10,10,10,10));
-        layout.getChildren().addAll(taskTableView);
+        layout.setPadding(new Insets(10, 10, 10, 10));
+        layout.getChildren().addAll(taskTableView, searchBoxView);
 
-        scene = new Scene(layout, 1200,550);
+        scene = new Scene(layout, 690, 400);
         window.setScene(scene);
         window.show();
     }
 
     public ObservableList<Task> getTasks() {
-        ObservableList<Task> tasks = FXCollections.observableArrayList();
-        tasks = TaskFactory.getTaskList();
+        tasks = FXCollections.observableArrayList(TaskFactory.getTaskList());
         return tasks;
     }
+
+    public void handleChoiceBoxFilterChange(String filter) {
+        if (Arrays.asList(SINGLE_TEXT_FIELD_FILTERS).contains(filter)) {
+            if (!SINGLE_FILTER_ACTIVE) {
+                SINGLE_FILTER_ACTIVE = true;
+                // Cleanup
+                searchBoxView.getChildren().removeAll(tfFrom, tfTo, btnSearch, btnClear);
+
+                // set new fields
+                tfSearchQuery = new TextField();
+                tfSearchQuery.setPromptText(filter);
+                tfSearchQuery.setMinWidth(100);
+
+                // Search and Clear buttons
+                btnSearch = new Button("Search");
+                btnSearch.setOnAction(e -> handleSearch());
+                btnClear = new Button("Clear");
+                btnClear.setOnAction(e -> handleClear());
+
+                searchBoxView.getChildren().addAll(tfSearchQuery, btnSearch, btnClear);
+            } else {
+                tfSearchQuery.setPromptText(filter);
+            }
+        } else {
+            SINGLE_FILTER_ACTIVE = false;
+            // Cleanup
+            searchBoxView.getChildren().removeAll(tfSearchQuery, btnSearch, btnClear);
+            tfFrom = new TextField();
+            tfFrom.setPromptText("From");
+            tfFrom.setMinWidth(100);
+
+            // set new fields
+            tfTo = new TextField();
+            tfTo.setPromptText("To");
+            tfTo.setMinWidth(100);
+
+            // Search and Clear buttons
+            btnSearch = new Button("Search");
+            btnSearch.setOnAction(e -> handleSearch());
+            btnClear = new Button("Clear");
+            btnClear.setOnAction(e -> handleClear());
+
+            searchBoxView.getChildren().addAll(tfTo, tfFrom, btnSearch, btnClear);
+        }
+    }
+
+    public void handleSearch() {
+        String taskName = tfSearchQuery.getText();
+        List<Task> filtered = TaskPredicates.getFilteredTaskList((List) tasks, findByProjectName(taskName));
+        filteredTasks = FXCollections.observableArrayList(filtered);
+        taskTableView.getItems().removeAll();
+        taskTableView.setItems(filteredTasks);
+    }
+
+    public void handleClear() {
+        filteredTasks = null;
+        taskTableView.getItems().removeAll();
+        taskTableView.setItems(getTasks());
+        tfSearchQuery.clear();
+    }
+
 
     //        /* Generate a task list to work with. Please check out the "TaskFactory" class in the "task" package to
 //        * generate any additional task objects to test out the predicate logic.
