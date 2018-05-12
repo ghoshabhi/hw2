@@ -5,12 +5,15 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Color;
 import task.Task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This is a helper class which sets up the TableView for the application.
+ * It sets all the styles and all the formatting needed for the respective columns.
+ */
 public class TasksTableView {
     public static TableView getTableView() {
         DateTimeFormatter myDateFormatter = DateTimeFormatter.ofPattern("MM/dd/YYYY");
@@ -95,6 +98,5 @@ public class TasksTableView {
         taskTableView.getColumns().addAll(colTaskId, colTaskName, colProjectName, colTaskType, colUserId, colTaskDeadline, colTaskCompleted);
 
         return taskTableView;
-        // taskTableView.setItems(getTasks());
     };
 }

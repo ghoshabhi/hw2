@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="49f4ec0b-adf7-4255-b173-f7e3f9065d5a" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TasksTableView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TasksTableView.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,30 +15,50 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="124" column="22" selection-start-line="124" selection-start-column="22" selection-end-line="124" selection-end-column="22" />
+            <state relative-caret-position="553">
+              <caret line="61" column="4" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1385#1386#0" expanded="true" />
                 <element signature="e#1413#1414#0" expanded="true" />
+                <element signature="docComment;method#start#0;class#Main#0" />
+                <element signature="method#start#0;class#Main#0" />
+                <element signature="docComment;method#getTasks#0;class#Main#0" />
+                <element signature="method#getTasks#0;class#Main#0" />
+                <element signature="docComment;method#handleChoiceBoxFilterChange#0;class#Main#0" />
                 <element signature="method#handleChoiceBoxFilterChange#0;class#Main#0" />
+                <element signature="docComment;method#handleMultiSearch#0;class#Main#0" />
+                <element signature="method#handleMultiSearch#0;class#Main#0" />
+                <element signature="docComment;method#handleSearch#0;class#Main#0" />
                 <element signature="method#handleSearch#0;class#Main#0" />
-                <element signature="e#6742#6992#0" />
+                <element signature="docComment;method#handleClear#0;class#Main#0" />
+                <element signature="method#handleClear#0;class#Main#0" />
+                <element signature="docComment;method#handleGenClear#0;class#Main#0" />
+                <element signature="method#handleGenClear#0;class#Main#0" />
+                <element signature="docComment;method#formatDate#0;class#Main#0" />
+                <element signature="method#formatDate#0;class#Main#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TasksTableView.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="TasksTableView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ui/TasksTableView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="49" column="38" selection-start-line="49" selection-start-column="38" selection-end-line="49" selection-end-column="38" />
+            <state relative-caret-position="640">
+              <caret line="99" column="29" selection-start-line="99" selection-start-column="29" selection-end-line="99" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="docComment;class#TasksTableView#0" />
+                <element signature="e#1850#2240#0" expanded="true" />
+                <element signature="e#2239#2240#0" expanded="true" />
+                <element signature="e#2605#3033#0" expanded="true" />
+                <element signature="e#3032#3033#0" expanded="true" />
+                <element signature="e#3442#3870#0" expanded="true" />
+                <element signature="e#3869#3870#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -88,6 +109,7 @@
       <find>Task.TASK_TYPES</find>
       <find>multiFilter</find>
       <find>ALL_FILTERS</find>
+      <find>handleGenSearch</find>
     </findStrings>
     <replaceStrings>
       <replace>CENTER</replace>
@@ -96,6 +118,7 @@
       <replace>TaskType</replace>
       <replace>multiFilterView</replace>
       <replace>AVAILABLE_FILTERS</replace>
+      <replace>handleMultiSearch</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -108,13 +131,13 @@
         <option value="$PROJECT_DIR$/src/ui/ProjectsTableView.java" />
         <option value="$PROJECT_DIR$/src/ui/SearchView.java" />
         <option value="$PROJECT_DIR$/src/main/styles.css" />
-        <option value="$PROJECT_DIR$/src/ui/TasksTableView.java" />
         <option value="$PROJECT_DIR$/src/task/TaskTypes.java" />
         <option value="$PROJECT_DIR$/src/task/TaskType.java" />
         <option value="$PROJECT_DIR$/src/task/Task.java" />
         <option value="$PROJECT_DIR$/src/taskpredicates/TaskPredicates.java" />
         <option value="$PROJECT_DIR$/src/task/TaskFactory.java" />
         <option value="$PROJECT_DIR$/src/main/Main.java" />
+        <option value="$PROJECT_DIR$/src/ui/TasksTableView.java" />
       </list>
     </option>
   </component>
@@ -282,12 +305,12 @@
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.30060607" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.30060607" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.59636366" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16523606" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16523606" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -347,9 +370,22 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1385#1386#0" expanded="true" />
             <element signature="e#1413#1414#0" expanded="true" />
+            <element signature="docComment;method#start#0;class#Main#0" />
+            <element signature="method#start#0;class#Main#0" />
+            <element signature="docComment;method#getTasks#0;class#Main#0" />
+            <element signature="method#getTasks#0;class#Main#0" />
+            <element signature="docComment;method#handleChoiceBoxFilterChange#0;class#Main#0" />
             <element signature="method#handleChoiceBoxFilterChange#0;class#Main#0" />
+            <element signature="docComment;method#handleMultiSearch#0;class#Main#0" />
+            <element signature="method#handleMultiSearch#0;class#Main#0" />
+            <element signature="docComment;method#handleSearch#0;class#Main#0" />
             <element signature="method#handleSearch#0;class#Main#0" />
-            <element signature="e#6742#6992#0" />
+            <element signature="docComment;method#handleClear#0;class#Main#0" />
+            <element signature="method#handleClear#0;class#Main#0" />
+            <element signature="docComment;method#handleGenClear#0;class#Main#0" />
+            <element signature="method#handleGenClear#0;class#Main#0" />
+            <element signature="docComment;method#formatDate#0;class#Main#0" />
+            <element signature="method#formatDate#0;class#Main#0" />
           </folding>
         </state>
       </provider>
@@ -395,9 +431,22 @@
             <element signature="imports" expanded="true" />
             <element signature="e#1385#1386#0" expanded="true" />
             <element signature="e#1413#1414#0" expanded="true" />
+            <element signature="docComment;method#start#0;class#Main#0" />
+            <element signature="method#start#0;class#Main#0" />
+            <element signature="docComment;method#getTasks#0;class#Main#0" />
+            <element signature="method#getTasks#0;class#Main#0" />
+            <element signature="docComment;method#handleChoiceBoxFilterChange#0;class#Main#0" />
             <element signature="method#handleChoiceBoxFilterChange#0;class#Main#0" />
+            <element signature="docComment;method#handleMultiSearch#0;class#Main#0" />
+            <element signature="method#handleMultiSearch#0;class#Main#0" />
+            <element signature="docComment;method#handleSearch#0;class#Main#0" />
             <element signature="method#handleSearch#0;class#Main#0" />
-            <element signature="e#6742#6992#0" />
+            <element signature="docComment;method#handleClear#0;class#Main#0" />
+            <element signature="method#handleClear#0;class#Main#0" />
+            <element signature="docComment;method#handleGenClear#0;class#Main#0" />
+            <element signature="method#handleGenClear#0;class#Main#0" />
+            <element signature="docComment;method#formatDate#0;class#Main#0" />
+            <element signature="method#formatDate#0;class#Main#0" />
           </folding>
         </state>
       </provider>
@@ -604,27 +653,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ui/TasksTableView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="705">
-          <caret line="49" column="38" selection-start-line="49" selection-start-column="38" selection-end-line="49" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="124" column="22" selection-start-line="124" selection-start-column="22" selection-end-line="124" selection-end-column="22" />
+        <state relative-caret-position="553">
+          <caret line="61" column="4" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="4" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1385#1386#0" expanded="true" />
             <element signature="e#1413#1414#0" expanded="true" />
+            <element signature="docComment;method#start#0;class#Main#0" />
+            <element signature="method#start#0;class#Main#0" />
+            <element signature="docComment;method#getTasks#0;class#Main#0" />
+            <element signature="method#getTasks#0;class#Main#0" />
+            <element signature="docComment;method#handleChoiceBoxFilterChange#0;class#Main#0" />
             <element signature="method#handleChoiceBoxFilterChange#0;class#Main#0" />
+            <element signature="docComment;method#handleMultiSearch#0;class#Main#0" />
+            <element signature="method#handleMultiSearch#0;class#Main#0" />
+            <element signature="docComment;method#handleSearch#0;class#Main#0" />
             <element signature="method#handleSearch#0;class#Main#0" />
-            <element signature="e#6742#6992#0" />
+            <element signature="docComment;method#handleClear#0;class#Main#0" />
+            <element signature="method#handleClear#0;class#Main#0" />
+            <element signature="docComment;method#handleGenClear#0;class#Main#0" />
+            <element signature="method#handleGenClear#0;class#Main#0" />
+            <element signature="docComment;method#formatDate#0;class#Main#0" />
+            <element signature="method#formatDate#0;class#Main#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ui/TasksTableView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="640">
+          <caret line="99" column="29" selection-start-line="99" selection-start-column="29" selection-end-line="99" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#TasksTableView#0" />
+            <element signature="e#1850#2240#0" expanded="true" />
+            <element signature="e#2239#2240#0" expanded="true" />
+            <element signature="e#2605#3033#0" expanded="true" />
+            <element signature="e#3032#3033#0" expanded="true" />
+            <element signature="e#3442#3870#0" expanded="true" />
+            <element signature="e#3869#3870#0" expanded="true" />
           </folding>
         </state>
       </provider>

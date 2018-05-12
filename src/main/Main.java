@@ -59,10 +59,23 @@ public class Main extends Application {
         launch(args);
     }
 
+    /**
+     * This function sets up the whole view of the application and all its components
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
         window.setTitle("Project Management Application");
+
+        singleFilterView = new VBox(10);
+        multiFilterView = new VBox(10);
+
+        // Single search view setup
+        searchBoxView = new VBox(10);
+        searchBoxView.setPadding(new Insets(10, 10, 10, 10));
+        Separator separator = new Separator();
 
         comboBoxFilter = new ComboBox<>();
         comboBoxFilter.setPromptText("Choose a Filter...");
@@ -73,16 +86,10 @@ public class Main extends Application {
                 .selectedItemProperty()
                 .addListener((v, oldValue, newValue) -> handleChoiceBoxFilterChange(newValue));
 
-        searchBoxView = new VBox(10);
-        searchBoxView.setPadding(new Insets(10, 10, 10, 10));
-        Separator separator = new Separator();
-
-        singleFilterView = new VBox(10);
-        multiFilterView = new VBox(10);
-
         Label singleSearchLbl = new Label("Single Query Search");
         singleSearchLbl.setStyle("-fx-font-size: 18px; -fx-text-fill: #005abc; -fx-font-weight: bold;");
         singleFilterView.getChildren().addAll(singleSearchLbl, comboBoxFilter);
+        // Single search view setup - end
 
         // General search view components setup
         HBox hbProjName = new HBox(10);
@@ -115,7 +122,7 @@ public class Main extends Application {
         HBox hbGenSearchBtns = new HBox(10);
         genBtnSearch = new Button("Search");
         genBtnSearch.setStyle("-fx-background-color: #69b854; -fx-background-radius: 10; -fx-text-fill: #fff");
-        genBtnSearch.setOnAction(e -> handleGenSearch());
+        genBtnSearch.setOnAction(e -> handleMultiSearch());
         genBtnClear = new Button("Clear");
         genBtnClear.setStyle("-fx-background-color: #e84946; -fx-background-radius: 10; -fx-text-fill: #fff");
         genBtnClear.setOnAction(e -> handleGenClear());
@@ -125,12 +132,12 @@ public class Main extends Application {
         multiSearchLbl.setStyle("-fx-font-size: 18px; -fx-text-fill: #005abc; -fx-font-weight: bold;");
 
         multiFilterView.getChildren().addAll(multiSearchLbl, hbProjName, hbUserId, hbTaskType, hbDeadline, hbGenSearchBtns);
-
         // General search view components setup end
-
+        
+        // Setup search box view
         searchBoxView.getChildren().addAll(singleFilterView, separator, multiFilterView);
 
-
+        // Setup table view
         taskTableView = TasksTableView.getTableView();
         taskTableView.setItems(getTasks());
 
@@ -143,53 +150,21 @@ public class Main extends Application {
         window.show();
     }
 
+    /**
+     * This function helps with setting up seed data for application
+     * @return A list of tasks
+     */
     private ObservableList<Task> getTasks() {
         List<Task> list = TaskFactory.getTaskList();
         tasks = FXCollections.observableArrayList(list);
         return tasks;
     }
 
-    private void handleGenSearch() {
-        List<Predicate<Task>> filters = new ArrayList<>();
-
-        if (!genTfProjectName.getText().trim().isEmpty()) {
-            filters.add(findByProjectName(genTfProjectName.getText()));
-        }
-        if (!genTfUserId.getText().isEmpty()) {
-            filters.add(findByUserId(genTfUserId.getText()));
-        }
-        if (genDtDeadlineFrom.getValue() != null && genDtDeadlineTo.getValue() != null) {
-            LocalDateTime ldtFrom = formatDate(genDtDeadlineFrom.getValue().toString());
-            LocalDateTime ldtTo = formatDate(genDtDeadlineTo.getValue().toString());
-            filters.add(findByDeadline(ldtFrom, ldtTo));
-        }
-        if (!genComboBoxTaskType.getSelectionModel().isEmpty()) {
-            String strTaskType = genComboBoxTaskType.getValue();
-            TaskType taskType = TaskType.valueOf(strTaskType.toUpperCase());
-            filters.add(findByTaskType(taskType));
-        }
-
-        if (filters.size() != 0) {
-            List<Task> filtered = query((List) tasks, filters);
-            filteredTasks = FXCollections.observableArrayList(filtered);
-            taskTableView.getItems().removeAll();
-            taskTableView.setItems(filteredTasks);
-        }
-    }
-
-    private void handleGenClear() {
-        filteredTasks = null;
-
-        genTfProjectName.clear();
-        genTfUserId.clear();
-        genComboBoxTaskType.getSelectionModel().clearSelection();
-        genDtDeadlineFrom.getEditor().clear();
-        genDtDeadlineTo.getEditor().clear();
-
-        taskTableView.getItems().removeAll();
-        taskTableView.setItems(tasks);
-    }
-
+    /**
+     * Single filter combo box change listener. This function renders the appropriate
+     * view based off the filter chosen.
+     * @param filter the option chosen from the dropdown
+     */
     private void handleChoiceBoxFilterChange(String filter) {
         if (Arrays.asList(SINGLE_TEXT_FIELD_FILTERS).contains(filter)) {
             if (!SINGLE_FILTER_ACTIVE) {
@@ -259,6 +234,40 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Handles multiple query search
+     */
+    private void handleMultiSearch() {
+        List<Predicate<Task>> filters = new ArrayList<>();
+
+        if (!genTfProjectName.getText().trim().isEmpty()) {
+            filters.add(findByProjectName(genTfProjectName.getText()));
+        }
+        if (!genTfUserId.getText().isEmpty()) {
+            filters.add(findByUserId(genTfUserId.getText()));
+        }
+        if (genDtDeadlineFrom.getValue() != null && genDtDeadlineTo.getValue() != null) {
+            LocalDateTime ldtFrom = formatDate(genDtDeadlineFrom.getValue().toString());
+            LocalDateTime ldtTo = formatDate(genDtDeadlineTo.getValue().toString());
+            filters.add(findByDeadline(ldtFrom, ldtTo));
+        }
+        if (!genComboBoxTaskType.getSelectionModel().isEmpty()) {
+            String strTaskType = genComboBoxTaskType.getValue();
+            TaskType taskType = TaskType.valueOf(strTaskType.toUpperCase());
+            filters.add(findByTaskType(taskType));
+        }
+
+        if (filters.size() != 0) {
+            List<Task> filtered = query((List) tasks, filters);
+            filteredTasks = FXCollections.observableArrayList(filtered);
+            taskTableView.getItems().removeAll();
+            taskTableView.setItems(filteredTasks);
+        }
+    }
+
+    /**
+     * Handles single query search
+     */
     private void handleSearch() {
         if (SINGLE_FILTER_ACTIVE) {
             String query = tfSearchQuery.getText();
@@ -310,12 +319,9 @@ public class Main extends Application {
         }
     }
 
-    private LocalDateTime formatDate(String dt) {
-        LocalDate localDate = LocalDate.parse(dt, DATE_FORMATTER);
-        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalDateTime.now().toLocalTime());
-        return localDateTime;
-    }
-
+    /**
+     * Clears single query field and resets data for table view
+     */
     private void handleClear() {
         filteredTasks = null;
         if (DROPDOWN_FILTER_ACTIVE) {
@@ -329,6 +335,33 @@ public class Main extends Application {
 
         taskTableView.getItems().removeAll();
         taskTableView.setItems(tasks);
+    }
+
+    /**
+     * Clears all fields in multiple query view and resets data for table view
+     */
+    private void handleGenClear() {
+        filteredTasks = null;
+
+        genTfProjectName.clear();
+        genTfUserId.clear();
+        genComboBoxTaskType.getSelectionModel().clearSelection();
+        genDtDeadlineFrom.getEditor().clear();
+        genDtDeadlineTo.getEditor().clear();
+
+        taskTableView.getItems().removeAll();
+        taskTableView.setItems(tasks);
+    }
+
+    /**
+     * Helper function to convert string date to LocalDateTime object
+     * @param dt - String date to convert
+     * @return Converted date
+     */
+    private LocalDateTime formatDate(String dt) {
+        LocalDate localDate = LocalDate.parse(dt, DATE_FORMATTER);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalDateTime.now().toLocalTime());
+        return localDateTime;
     }
 }
 
